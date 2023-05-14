@@ -24,6 +24,7 @@ if [[ $answer == "y" ]]; then
     echo "Checking if system is up to date..."
     echo "If prompted to restart after, please do so."
     sudo dnf update -y
+    sleep 5
 else
     echo "Exiting script."
     return 1
