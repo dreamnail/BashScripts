@@ -9,25 +9,20 @@ function getGPUDrivers()
    sudo dnf install xorg-x11-drv-nvidia-cuda #optional for cuda/nvdec/nvenc support
 }
 
+echo "MAKE SURE YOUR SYSTEM IS UPDATED BEFORE RUNNING THIS SCRIPT!"
 echo "You are running $(cat /etc/fedora-release). This script was built for Fedora 37. Would you like to continue? (y/n)"
 read -r answer
 
-## REPLACE WITH FUNCTION
 while [[ $answer != "y" && $answer != "n" ]]
 do
     echo "Invalid input. Please enter 'y' or 'n'."
     read -r answer
-    sleep 5
 done
 
-if [[ $answer == "y" ]]; then
-    echo "Checking if system is up to date..."
-    echo "If prompted to restart after, please do so."
-    sudo dnf update -y
-    sleep 5
-else
+if [[ $answer == "n" ]]; then
     echo "Exiting script."
-    return 1
+    sleep 3
+    exit 1
 fi
 
 ## Install things that should come pre-installed with Fedora 
@@ -51,12 +46,15 @@ done
 
 if [[ $answer == "y" ]]; then
 
-    grep -E '^flags.*(vmx|svm)' /proc/cpuinfo | wc -l | awk '{if ($1 < 10) system("echo this system does not support the relevant virtualization extensions")}' && return 2
-    echo "Install virtualization software.."
-    sudo dnf group install --with-optional virtualization && sudo systemctl start libvirtd && sudo systemctl enable libvirtd || echo "Install failed."
-    echo "Verifying KVM kernel modules. You should see kvm_intel or kvm_amd here.. "
-    lsmod | grep kvm
-    sleep 3
+   if [[ 8 -ge $(grep -E '^flags.*(vmx|svm)' /proc/cpuinfo | wc -l | awk '{if ($1 < 10) system("echo this message means nothing and i should prob find a better way to do this" )}' | wc -w) ]]; then
+       echo "Install virtualization software.." && sudo dnf group install -y --with-optional virtualization && sudo systemctl start libvirtd && sudo systemctl enable libvirtd || echo "Install failed."
+       echo "Verifying KVM kernel modules. You should see kvm_intel or kvm_amd here.. "
+       lsmod | grep kvm
+       sleep 5
+   else
+	echo "this system does not support the relevant virtualization extensions"
+   fi
+   
 fi
 
 ## Install GPU driver
