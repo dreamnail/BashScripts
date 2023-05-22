@@ -1,5 +1,15 @@
 #!/bin/bash
-set -x
+
+function getYesOrNo()
+{
+    local answer
+    read -r answer
+    while [[ $answer != "y" && $answer != "n" ]]; do
+        echo "Invalid input. Please enter 'y' or 'n'."
+        read -r answer
+    done
+    echo "$answer"
+}
 
 function getGPUDrivers()
 {
@@ -11,13 +21,7 @@ function getGPUDrivers()
 
 echo "MAKE SURE YOUR SYSTEM IS UPDATED BEFORE RUNNING THIS SCRIPT!"
 echo "You are running $(cat /etc/fedora-release). This script was built for Fedora 37. Would you like to continue? (y/n)"
-read -r answer
-
-while [[ $answer != "y" && $answer != "n" ]]
-do
-    echo "Invalid input. Please enter 'y' or 'n'."
-    read -r answer
-done
+answer=$(getYesOrNo)
 
 if [[ $answer == "n" ]]; then
     echo "Exiting script."
@@ -36,13 +40,7 @@ sudo dnf groupupdate -y sound-and-video
 ## Install VM software
 
 echo "Would you like to install and setup virtualization software? (y/n)"
-read -r answer
-
-while [[ $answer != "y" && $answer != "n" ]]
-do
-    echo "Invalid input. Please enter 'y' or 'n'."
-    read -r answer
-done
+answer=$(getYesOrNo)
 
 if [[ $answer == "y" ]]; then
 
@@ -61,24 +59,13 @@ fi
 
 echo "your current GPU is.. $(lspci |grep VGA)" 
 echo "would you like to install nvidia gpu drivers? y/n"
-read -r answer
+answer=$(getYesOrNo)
 
-while [[ $answer != "y" && $answer != "n" ]]
-do	
-    echo "Invalid input. Please enter 'y' or 'n'."
-    read -r answer
-done
 if [[ $answer == "y" ]]; then
     lspci | grep -q "NVIDIA" && getGPUDrivers || echo "did not find \"NVIDIA\" in lspci are you sure you would like to continue? y/n"
-    read -r answer 
-    while [[ $answer != "y" && $answer != "n" ]]
-do
-    echo "Invalid input. Please enter 'y' or 'n'."
-    read -r answer
-done
+    answer=$(getYesOrNo)
    if [[ $answer == "y" ]]; then
 	   getGPUDrivers
    fi
 fi
-
 
