@@ -19,8 +19,8 @@ getGPUDrivers()
    dnf install xorg-x11-drv-nvidia-cuda #optional for cuda/nvdec/nvenc support
 }
 
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
+if [[ "$EUID" -ne 0 ]]; then 
+    echo "Please run as root"
   exit
 fi
 
