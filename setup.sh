@@ -13,6 +13,7 @@ getYesOrNo()
 
 getGPUDrivers()
 {
+	#add support for amd
    echo "installing nvidia drivers for any GPU found in 2014 and later .."
    dnf update -y # and reboot if you are not on the latest kernel
    dnf install akmod-nvidia # rhel/centos users can use kmod-nvidia instead
